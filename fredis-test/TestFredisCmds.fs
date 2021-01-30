@@ -43,8 +43,6 @@ let ``Set then GetBit matches redis`` () =
     test <@ 1L = (readRESPInteger respResult)  @>
 
 
-
-
 type ``Execute GETRANGE`` () =
 
     [<Fact>]
