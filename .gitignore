@@ -1,0 +1,73 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+
+*.ReSharper.user
+_ReSharper.*
+*.suo
+bin
+obj
+*moles*
+*Dot*
+~*
+*.user
+Release/*
+packages/*
+.vs
+
+
+*.vspx
+*.psess
+*.vsp
+/benchmark-test-scripts/x/gcServTrue_gcConcTrue.txt
+/benchmark-test-scripts/x/gcServFalse_gcConcFalse.txt
+/benchmark-test-scripts/gcServTrue_gcConcTrue.txt
+/benchmark-test-scripts/gcServFalse_gcConcFalse.txt
+/benchmark-test-scripts/socAsyncEventArgs.txt.1
+/benchmark-test-scripts/semiAsync.txt
+/benchmark-test-scripts/async.txt
+/benchmark-test-scripts/socAsyncEventArgsCallback.txt
+/benchmark-test-scripts/csTestApp.txt.x
+/benchmark-test-scripts/async.txt.y

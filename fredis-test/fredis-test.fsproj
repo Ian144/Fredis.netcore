@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>fredis_test</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="TestFredisCmds.fs" />
+    <Compile Include="TestFredisCmdsFSCheck.fs" />
+    <Compile Include="TestFredisCmdToRESP.fs" />
+    <Compile Include="TestRedisVsFredis.fs" />
+    <Compile Include="TestRespMsgProcessor.fs" />
+    <Compile Include="TestRESPParsingFSCheck.fs" />
+    <Compile Include="TestSAEA.fs" />
+    <Compile Include="TestSetBitGetBit.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FsCheck" Version="3.0.0-alpha5" />
+    <PackageReference Include="FsCheck.Xunit" Version="3.0.0-alpha5" />
+    <PackageReference Include="FSharpx.Extras" Version="2.5.0" />
+    <PackageReference Include="Unquote" Version="5.0.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\fredis-lib\fredis-lib.fsproj" />
+  </ItemGroup>
+
+</Project>
