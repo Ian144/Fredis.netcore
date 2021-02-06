@@ -24,15 +24,11 @@ let CR = 13
 let LF = 10
 
 
-
-
-
 // 65, and 122 are the lowest and highest alpha characters
 // genAlphaByteArray is used to create the contents of Resp SimpleString's and Errors, which cannot contain CRLF
 let genAlphaByte = Gen.choose(65,122) |> Gen.map byte 
+
 let genAlphaByteArray = Gen.arrayOf genAlphaByte 
-
-
 
 let genPopulatedRespBulkString = 
     let crlf = [13uy; 10uy]
@@ -47,11 +43,7 @@ let genPopulatedRespBulkString =
 
 let genNilRespBulkStr = gen{ return Resp.BulkString BulkStrContents.Nil }
 
-
-
-let genRespBulkString = Gen.frequency [10, genPopulatedRespBulkString; 
-                                       1,  genNilRespBulkStr]
-
+let genRespBulkString = Gen.frequency [10, genPopulatedRespBulkString;  1,  genNilRespBulkStr]
 
 let genRespSimpleString = 
     gen{
@@ -88,21 +80,25 @@ type ArbOverrides =
         Arb.fromGen (Gen.choose(1, 8096*8096))
 
 
+type RoundTripPropertyAttribute() =
+    inherit PropertyAttribute(
+        Arbitrary = [| typeof<ArbOverrides> |],
+        MaxTest = 9999,
+        EndSize = 9999,
+        Verbose = false,
+        QuietOnSuccess = false )
 
 
-[<Property( Arbitrary=[|typeof<ArbOverrides>|] )>]
-let ``Async Write-Read Resp stream roundtrip`` (bufSize:int)  (respIn:FredisTypes.Resp) =
+[<RoundTripProperty>]
+let ``Async Write-Read Resp stream roundtrip`` (respIn:FredisTypes.Resp) =
     use strm = new System.IO.MemoryStream()
     AsyncRespStreamFuncs.AsyncSendResp strm respIn |> Async.RunSynchronously
     strm.Seek(0L, System.IO.SeekOrigin.Begin) |> ignore
-    let respOut = AsyncRespMsgParser.LoadRESPMsgInner bufSize strm |> Async.RunSynchronously
+    let respOut = AsyncRespMsgParser.LoadRESPMsgInner (8*1024) strm |> Async.RunSynchronously
     let isEof = strm.Position = strm.Length
     respIn = respOut && isEof
 
-
-
-
-[<Property( Arbitrary=[|typeof<ArbOverrides>|] )>]
+[<RoundTripProperty>]
 let ``Write-Read Resp stream roundtrip`` (bufSize:int) (respIn:Resp) =
     use strm = new MemoryStream()
     AsyncRespStreamFuncs.AsyncSendResp strm respIn |> Async.RunSynchronously
@@ -113,7 +109,7 @@ let ``Write-Read Resp stream roundtrip`` (bufSize:int) (respIn:Resp) =
     respIn = respOut && isEof
 
 
-[<Property>]
+[<RoundTripProperty>]
 let ``ReadInt64 Write-Read roundtrip`` (ii:int64)  =
     use strm = new MemoryStream()
     let bytes = (sprintf "%d\r\n" ii) |> Utils.StrToBytes
@@ -122,27 +118,6 @@ let ``ReadInt64 Write-Read roundtrip`` (ii:int64)  =
     let iiOut = RespMsgParser.ReadInt64(strm)
     let isEof = strm.Position = strm.Length
     ii = iiOut && isEof
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -162,13 +162,6 @@ type BulkStrContents =
 
 
 
-//type Resp =
-//    | SimpleString   of Bytes
-//    | Error          of Bytes
-//    | Integer        of int64
-//    | BulkString     of BulkStrContents
-//    | Array          of Resp array
-
 // type 'Resp' encodes the contents of the various RESP types, it does not encode the wire respresentation of RESP, e.g. BulkString lengths or 
 // SimpleString etc terminating with crfl. Lengths and crlf termination are dealt with when reading and writing resp, see RespStreamFuncs
 [<StructuredFormatDisplay("{FormatDisplay}")>]
@@ -191,4 +184,4 @@ type Resp =
                                 | BulkStrContents.Nil           -> "BulkString nil"
         | Array        xs   ->  let subStrs = xs |> Array.map (fun x -> x.FormatDisplay )
                                 let subStr = System.String.Join(", ", subStrs)
-                                sprintf "Array [|%s|]" subStr
+                                sprintf "Array [%s]" subStr
