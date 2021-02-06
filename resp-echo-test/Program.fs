@@ -36,18 +36,28 @@ let genAlphaByteArray = Gen.arrayOfLength 8 genAlphaByte
 let genFredisCmd = Arb.generate<FredisCmd>
 
 
+
+//let genPopulatedBulkStringContents =
+//    gen{
+//        let! bsl = Arb.generate<byte> |> Gen.nonEmptyListOf
+//        let bs = bsl |> Array.ofList
+//        return BulkStrContents.Contents bs
+//    }
+
 // containing all byte values, not overridden by genAlphaByteArray
 // ensure some crlfs are embedded
-let genPopulatedBulkStringContents =
+let genPopulatedBulkStringContentsIncCrlf =
+    let crlf = [13uy; 10uy]
     gen{
-        let! bsl = Arb.generate<byte> |> Gen.nonEmptyListOf
+        let! bs1 = Arb.generate<byte list>
+        let! bs2 = Arb.generate<byte list>
+        let! bs3 = Arb.generate<byte list>
+        let bsl = bs1 @ crlf @ bs2 @ crlf @ bs3
         let bs = bsl |> Array.ofList
         return BulkStrContents.Contents bs
     }
 
-
-let genBulkStringContents = Gen.frequency[ (16, genPopulatedBulkStringContents); (1, Gen.constant(BulkStrContents.Nil)) ]
-
+let genBulkStringContents = Gen.frequency[ (16, genPopulatedBulkStringContentsIncCrlf); (1, Gen.constant(BulkStrContents.Nil)) ]
 
 type ArbOverrides() =
     //static member Float() =
