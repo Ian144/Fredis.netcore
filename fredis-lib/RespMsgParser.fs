@@ -43,9 +43,6 @@ let rec ReadUntilCRLF (strm:Stream) : int list =
     | b     ->  b :: (ReadUntilCRLF strm ) 
 
 
-
-
-
 let ReadDelimitedResp (makeRESPMsg:Bytes -> Resp) (strm:Stream) : Resp = 
     let bs = ReadUntilCRLF strm 
     bs |> List.map byte |> Array.ofList |> makeRESPMsg
@@ -112,8 +109,6 @@ let ReadBulkString(rcvBufSz:int) (strm:Stream) =
 
 let ReadRESPInteger = ReadInt64 >> Resp.Integer 
     
-
-
 
 //let rec LoadRESPMsgArray (rcvBuffSz:int) (ns:Stream) = 
 //    let numArrayElements = ReadInt64 ns 

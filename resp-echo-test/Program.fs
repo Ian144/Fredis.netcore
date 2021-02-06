@@ -6,7 +6,6 @@ open SocAsyncEventArgFuncs
 
 
 open FredisTypes
-//open RespStreamFuncs
 open FsCheck
 
 
@@ -31,32 +30,39 @@ let genByteOffset =
     |> Gen.map FredisTypes.ByteOffset.Create
     |> Gen.map (fun optBoffset -> optBoffset.Value)
 
-  
 
-
-let genAlphaByte = Gen.choose(0,255) |> Gen.map byte     
-//let genAlphaByte = Gen.choose(65,90) |> Gen.map byte 
-//let genAlphaByte = Gen.choose(88,88) |> Gen.map byte 
+let genAlphaByte = Gen.choose(97,122) |> Gen.map byte     
 let genAlphaByteArray = Gen.arrayOfLength 8 genAlphaByte 
 let genFredisCmd = Arb.generate<FredisCmd>
 
-type ArbOverrides() =
-    static member Float() =
-        Arb.Default.Float()
-        |> Arb.filter (fun f -> not <| System.Double.IsNaN(f) && 
-                                not <| System.Double.IsInfinity(f) &&
-                                (System.Math.Abs(f) < (System.Double.MaxValue / 2.0)) &&
-                                (System.Math.Abs(f) > 0.00001 ) )
 
+// containing all byte values, not overridden by genAlphaByteArray
+// ensure some crlfs are embedded
+let genPopulatedBulkStringContents =
+    gen{
+        let! bsl = Arb.generate<byte> |> Gen.nonEmptyListOf
+        let bs = bsl |> Array.ofList
+        return BulkStrContents.Contents bs
+    }
+
+
+let genBulkStringContents = Gen.frequency[ (16, genPopulatedBulkStringContents); (1, Gen.constant(BulkStrContents.Nil)) ]
+
+
+type ArbOverrides() =
+    //static member Float() =
+    //    Arb.Default.Float()
+    //    |> Arb.filter (fun f -> not <| System.Double.IsNaN(f) && 
+    //                            not <| System.Double.IsInfinity(f) &&
+    //                            (System.Math.Abs(f) < (System.Double.MaxValue / 2.0)) &&
+    //                            (System.Math.Abs(f) > 0.00001 ) )
     static member Key() = Arb.fromGen genKey
     static member ByteOffsets() = Arb.fromGen genByteOffset
     static member Bytes() = Arb.fromGen genAlphaByteArray
-    static member FredisCmd() = Arb.fromGen genFredisCmd // not shrinking in this test app, test runs are not independent as the fredis.net instance is not restarted for each run
-
-    
+    static member FredisCmd() = Arb.fromGen genFredisCmd 
+    static member BulkStrContents() = Arb.fromGen genBulkStringContents
 
 Arb.register<ArbOverrides>() |> ignore
-
 
 let maxNumConnections = 4
 let saeaBufSize = 32*1024
@@ -137,21 +143,11 @@ and StartAccept (listenSocket:Socket) (acceptEventArg:SocketAsyncEventArgs) =
         ProcessAccept acceptEventArg
 
 
-
-
-
-
 //let private sendReceive (tcpClient:TcpClient) (msg:Resp) =
 //    let strm = tcpClient.GetStream()
 //    RespStreamFuncs.AsyncSendResp strm msg |> Async.RunSynchronously
 //    let respTypeInt = strm.ReadByte()
 //    RespMsgParser.LoadRESPMsg tcpClient.ReceiveBufferSize respTypeInt strm
-
-
-
-
-
-
 
 
 let host = "127.0.0.1"
@@ -169,44 +165,35 @@ acceptEventArg.add_Completed (fun _ saea -> ProcessAccept saea)
 StartAccept listenSocket acceptEventArg
 
 
-
 let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
-    printfn "%O" cmd
+    //printfn "%A" cmd
     let respIn = cmd |> (FredisCmdToResp.FredisCmdToRESP >> FredisTypes.Resp.Array)
-    use tcpClient = new TcpClient(host, port)
-    let strm = tcpClient.GetStream()
-    AsyncRespStreamFuncs.AsyncSendResp strm respIn |> Async.RunSynchronously
-    let respTypeInt = strm.ReadByte()
-    let respOut = RespMsgParser.LoadRESPMsg tcpClient.ReceiveBufferSize respTypeInt strm
-    respIn = respOut
+    printfn "%A" respIn
+    true
+
+let makeResp (resp:FredisTypes.Resp) =
+    printfn "%O" resp
+    true
 
 
-//let config = {  Config.Default with 
-////                    EveryShrink = (sprintf "%A" )
-////                    Replay = Some (Random.StdGen (310046944,296129814))
-//                    StartSize = 128
-////                    MaxFail = 100
-//                    Every         = fun x y -> 
-//                                        let ss = Config.Verbose.Every x y
-//                                        sprintf "\n----------\n\n%s" ss
-//                    MaxTest = 100000 }
+//let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
+//    //printfn "%A" cmd
+//    let respIn = cmd |> (FredisCmdToResp.FredisCmdToRESP >> FredisTypes.Resp.Array)
+//    printfn "%A" respIn
+//    use tcpClient = new TcpClient(host, port)
+//    let strm = tcpClient.GetStream()
+//    AsyncRespStreamFuncs.AsyncSendResp strm respIn |> Async.RunSynchronously
+//    let respTypeInt = strm.ReadByte()
+//    let respOut = RespMsgParser.LoadRESPMsg tcpClient.ReceiveBufferSize respTypeInt strm
+//    respIn = respOut
 
 
-let config = Config.Default
 
-//let config = {  Config.Default with 
-//                    //StartSize = 128
-                    //Every = fun _ _ -> "."
-//                    //Every   = fun testCount y -> 
-//                    //            if testCount % 500 = 0
-//                    //            then sprintf "%d\n" testCount
-//                    //            else String.Empty
-//                    MaxTest = 100 
-//                    }
+let config =  FsCheck.Config.Default
 
 //Check.Verbose propFredisVsRedis
 
-Check.One (config, propRespSentToEchoServerReturnsSame)
+Check.One (config, makeResp)
 
 
 printfn "tests complete"

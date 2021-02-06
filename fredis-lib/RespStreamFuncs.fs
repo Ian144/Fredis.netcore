@@ -22,16 +22,10 @@ let Eat5NoAlloc (strm:Stream) =
     strm.ReadByte() |> ignore
 
 
-
-  
-
-
 let private crlf        = "\r\n"B
 let private simpStrType = "+"B
 let private errStrType  = "-"B
 let nilBulkStrBytes     = "$-1\r\n"B
-
-
 
 let private SendBulkString (strm:Stream) (contents:BulkStrContents) =
     match contents with
