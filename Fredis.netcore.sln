@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		scratch.md = scratch.md
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "resp-echo-test", "resp-echo-test\resp-echo-test.fsproj", "{E7DD1059-3FF2-4055-A7C3-E51CF044B286}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{BF17768B-31B7-4F0B-AF15-3F07E7C870FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF17768B-31B7-4F0B-AF15-3F07E7C870FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF17768B-31B7-4F0B-AF15-3F07E7C870FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7DD1059-3FF2-4055-A7C3-E51CF044B286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7DD1059-3FF2-4055-A7C3-E51CF044B286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7DD1059-3FF2-4055-A7C3-E51CF044B286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7DD1059-3FF2-4055-A7C3-E51CF044B286}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
