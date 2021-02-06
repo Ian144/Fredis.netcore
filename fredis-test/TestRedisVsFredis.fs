@@ -1,19 +1,10 @@
 ﻿module TestRedisVsFredis
 
-
-
-
-
 open Xunit
 open Swensen.Unquote
 
-
 open CmdCommon
 open FredisTypes
-
-
-
-
 
 
 // FIX DRY violation
@@ -21,8 +12,6 @@ let private readRESPInteger (msg:Resp) =
     match msg with
     | Resp.Integer ii   ->  ii
     | _                 ->  failwith "non integer RESP passed to readRESPInteger"
-
-
 
 
 //  redis               fredis
@@ -57,37 +46,6 @@ let ``setbit bitop bitpos 1`` () =
     let respResult = FredisCmdProcessor.Execute hashMap bitposCmd
 
     test <@ -1L = (readRESPInteger respResult)  @>
-
-
-
-
-//  (Some (Integer 0L), Some (Integer 0L))
-//  (Some (Integer 1L), Some (Integer 1L))
-//  (Some (Integer 8L), Some (Integer -1L))
-//  SetBit Key "key4" 0 false; 
-//  BitOp NOT (Key "key1", Key "key4");
-//  Bitpos Key "key1" false All
-
-
-//C:\ProgramData\chocolatey\lib\redis-64> .\redis-cli -p 6380
-//127.0.0.1:6380> get key2
-//"\xff"
-//127.0.0.1:6380> bitpos key2 0 0 0
-//(integer) -1
-//127.0.0.1:6380> bitpos key2 0 0 99
-//(integer) -1
-//127.0.0.1:6380> bitpos key2 1 0 99
-//(integer) 0
-//127.0.0.1:6380> bitpos key2 1
-//(integer) 0
-//127.0.0.1:6380> bitpos key2 0
-//(integer) 8
-//127.0.0.1:6380> bitpos key2 0 0 99
-//(integer) -1
-//127.0.0.1:6380>
-
-
-
 
 [<Fact>]
 let ``setbit bitop bitpos 2`` () =

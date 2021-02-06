@@ -14,23 +14,13 @@ open FredisTypes
 
 
 
-let private int64ToBytes (ii:int64) =
-    let ss = sprintf "%d" ii
-    Utils.StrToBytes ss
+let private int64ToBytes (ii:int64) = sprintf "%d" ii |> Utils.StrToBytes
 
-let private doubleToBytes (dd:double) =
-    let ss = sprintf "%f" dd
-    Utils.StrToBytes ss
+let private doubleToBytes (dd:double) = sprintf "%f" dd |> Utils.StrToBytes
 
+let private BytesToInt64 (bs:Bytes) = bs |> Utils.BytesToStr |> System.Convert.ToInt64 
 
-
-let private BytesToInt64 (bs:Bytes) =
-    bs |> Utils.BytesToStr |> System.Convert.ToInt64 
-
-let private BytesToDouble (bs:Bytes) =
-    bs |> Utils.BytesToStr |> System.Convert.ToDouble
-
-
+let private BytesToDouble (bs:Bytes) = bs |> Utils.BytesToStr |> System.Convert.ToDouble
 
 
 type Offsets = 

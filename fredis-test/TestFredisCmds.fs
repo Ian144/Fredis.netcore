@@ -109,10 +109,6 @@ type ``Execute GETSET`` () =
         let result = FredisCmdProcessor.Execute hashMap cmd 
         test <@ bsNewVal = hashMap.[key] && strOldVal = result @>
 
-
-
-
-
 type ``Execute SET GET`` () =
 
     [<Fact>]
@@ -128,9 +124,6 @@ type ``Execute SET GET`` () =
         test <@ setResult = RespUtils.okSimpleStr && expected = getResult @>
 
 
-
-
-
     [<Fact>]
     static member ``get cmd, returns nil string when key does not exist``() =
         let hashMap = HashMap()
@@ -143,7 +136,6 @@ type ``Execute SET GET`` () =
 
 
 type ``Execute SETBIT`` () =
-
 
     [<Fact>]
     static member ``"SETBIT key 7 true" then "SETBIT key 8 false" creates byte array len 2`` () =

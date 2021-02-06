@@ -35,9 +35,14 @@ let genAlphaByteArray = Gen.arrayOf genAlphaByte
 
 
 let genPopulatedRespBulkString = 
+    let crlf = [13uy; 10uy]
     gen{
-        let! bytes = genAlphaByteArray
-        return RespUtils.MakeBulkStr bytes
+        let! bs1 = Arb.generate<byte list>
+        let! bs2 = Arb.generate<byte list>
+        let! bs3 = Arb.generate<byte list>
+        let bsl = bs1 @ crlf @ bs2 @ crlf @ bs3
+        let bs = bsl |> Array.ofList
+        return RespUtils.MakeBulkStr bs
     }
 
 let genNilRespBulkStr = gen{ return Resp.BulkString BulkStrContents.Nil }

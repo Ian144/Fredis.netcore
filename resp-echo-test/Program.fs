@@ -175,35 +175,29 @@ acceptEventArg.add_Completed (fun _ saea -> ProcessAccept saea)
 StartAccept listenSocket acceptEventArg
 
 
-let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
-    //printfn "%A" cmd
-    let respIn = cmd |> (FredisCmdToResp.FredisCmdToRESP >> FredisTypes.Resp.Array)
-    printfn "%A" respIn
-    true
 
 let makeResp (resp:FredisTypes.Resp) =
     printfn "%O" resp
     true
 
 
-//let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
-//    //printfn "%A" cmd
-//    let respIn = cmd |> (FredisCmdToResp.FredisCmdToRESP >> FredisTypes.Resp.Array)
-//    printfn "%A" respIn
-//    use tcpClient = new TcpClient(host, port)
-//    let strm = tcpClient.GetStream()
-//    AsyncRespStreamFuncs.AsyncSendResp strm respIn |> Async.RunSynchronously
-//    let respTypeInt = strm.ReadByte()
-//    let respOut = RespMsgParser.LoadRESPMsg tcpClient.ReceiveBufferSize respTypeInt strm
-//    respIn = respOut
+let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
+    //printfn "%A" cmd
+    let respIn = cmd |> (FredisCmdToResp.FredisCmdToRESP >> FredisTypes.Resp.Array)
+    use tcpClient = new TcpClient(host, port)
+    let strm = tcpClient.GetStream()
+    AsyncRespStreamFuncs.AsyncSendResp strm respIn |> Async.RunSynchronously
+    let respTypeInt = strm.ReadByte()
+    let respOut = RespMsgParser.LoadRESPMsg tcpClient.ReceiveBufferSize respTypeInt strm
+    respIn = respOut
 
 
 
 let config =  FsCheck.Config.Default
 
-//Check.Verbose propFredisVsRedis
+Check.Verbose propRespSentToEchoServerReturnsSame
 
-Check.One (config, makeResp)
+//Check.One (config, propRespSentToEchoServerReturnsSame)
 
 
 printfn "tests complete"
