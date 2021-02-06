@@ -596,10 +596,6 @@ type ``Parse INCRBY`` () =
         test <@ Choice1Of2 expected = FredisCmdParser.ParseRESPtoFredisCmds [|incrBy; skey; increment |] @>
 
 
-
-
-
-
 type ``Parse BITOP`` () =
 
     let bitop   = "BITOP"   |> StrToBulkStr

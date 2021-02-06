@@ -46,8 +46,8 @@ type Stream with
             let! numBytesRead = Async.AwaitTask tsk
             return
                 match numBytesRead with
-                | 0 -> StructTuple.Pair (false, 0uy )
-                | _ -> StructTuple.Pair (true, buf.[0])
+                | 0 -> struct(false, 0uy )
+                | _ -> struct(true, buf.[0])
         }
 
 
@@ -74,7 +74,7 @@ let private AsyncSendBulkString (strm:Stream) (contents:BulkStrContents) =
 
 
 
-let private AsyncSendSimpleString2 (strm:Stream) (contents:byte array) =
+let private asyncSendSimpleString2 (strm:Stream) (contents:byte array) =
     async{
         do! strm.AsyncWrite simpStrType
         do! strm.AsyncWrite contents

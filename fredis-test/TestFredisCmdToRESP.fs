@@ -84,8 +84,6 @@ let genByteOffset =
     |> Gen.map FredisTypes.ByteOffset.Create
     |> Gen.map (fun optBoffset -> optBoffset.Value)
 
-
-
 let genBytes = Gen.arrayOf Arb.generate<byte>
     
 let genKeyBytePair =
@@ -94,8 +92,6 @@ let genKeyBytePair =
         let! bytes = genBytes
         return key, bytes
     }
-    
-
 
 // overrides apply to nested values in reflexively generated types (FredisCmds)
 type Overrides() =
@@ -107,8 +103,6 @@ type Overrides() =
 
     static member Key() = Arb.fromGen genKey
     static member ByteOffsets() = Arb.fromGen genByteOffset
-
-
 
 
 [<Property( Arbitrary=[|typeof<Overrides>|], Verbose=false, MaxTest=1000 )>]

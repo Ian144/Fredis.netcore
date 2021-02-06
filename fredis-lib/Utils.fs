@@ -48,7 +48,6 @@ let OptionToChoice (optFunc:'a -> 'b option) (xx:'a) choice2Of2Val  =
 //let ChoiceParseInt failureMsg str : Choice<int,byte[]> = OptionToChoice FSharpx.FSharpOption.ParseInt str failureMsg
 
 let ChoiceParseInt failureMsg str : Choice<int,'t> =
-    //WasteTime 99999
     OptionToChoice FSharpx.FSharpOption.ParseInt str failureMsg
 
 

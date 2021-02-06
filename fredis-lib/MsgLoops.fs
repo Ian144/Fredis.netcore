@@ -27,7 +27,7 @@ let HandleSocketError (name:string) (ex:System.Exception) =
         printfn "%s --> %s" name msg
 
 
-let ClientError ex =  HandleSocketError "client error" ex
+let ClientError ex = HandleSocketError "client error" ex
 let ConnectionListenerError ex = HandleSocketError "connection listener error" ex
 
 let bsOk = FredisTypes.BulkString (FredisTypes.BulkStrContents.Contents "OK"B)
@@ -105,9 +105,6 @@ let ClientListenerLoop (bufSize:int) (client:TcpClient) =
                                                 do! strm.FlushAsync() |> Async.AwaitTask
         }
 
-
-
-
     Async.StartWithContinuations(
          asyncProcessClientRequestsSemi,
          ignore,
@@ -130,3 +127,6 @@ let ConnectionListenerLoop (bufSize:int) (listener:TcpListener) =
         ConnectionListenerError,
         (fun ct -> printfn "ConnectionListener cancelled: %A" ct)
     )
+
+
+

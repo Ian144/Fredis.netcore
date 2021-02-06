@@ -69,8 +69,6 @@ let inline ReadInt64 (strm:Stream) =
         strm.ReadByte() |> ignore // throw away the CRLF
         num
 
-
-
 // an imperative int64 reader
 // adapted from sider code
 let inline ReadInt32 (strm:Stream) = 

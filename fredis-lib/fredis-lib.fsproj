@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="StructTuple.fs" />
     <Compile Include="FredisTypes.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="AsyncRespStreamFuncs.fs" />
