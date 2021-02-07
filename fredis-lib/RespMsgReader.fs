@@ -33,7 +33,6 @@ let CR = 13
 let LF = 10
 
 
-
 // TODO reading a single byte at at time is probably inefficient, consider a more efficient version of this function
 let rec ReadUntilCRLF (strm:Stream) : int list = 
     match strm.ReadByte() with    // annoyingly ReadByte returns an int32
@@ -66,6 +65,7 @@ let inline ReadInt64 (strm:Stream) =
         strm.ReadByte() |> ignore // throw away the CRLF
         num
 
+
 // an imperative int64 reader
 // adapted from sider code
 let inline ReadInt32 (strm:Stream) = 
@@ -87,7 +87,6 @@ let inline ReadInt32 (strm:Stream) =
 
 
 let ReadBulkString(rcvBufSz:int) (strm:Stream) = 
-
     let rec readInner (strm:Stream) (totalBytesToRead:int) (byteArray:byte array) =
         let mutable maxNumBytesToRead = if totalBytesToRead > rcvBufSz then rcvBufSz else totalBytesToRead
         let mutable totalSoFar = 0
@@ -96,9 +95,7 @@ let ReadBulkString(rcvBufSz:int) (strm:Stream) =
             totalSoFar <- totalSoFar + numBytesRead
             let numBytesRemaining = totalBytesToRead - totalSoFar
             maxNumBytesToRead <- if numBytesRemaining > rcvBufSz then rcvBufSz else numBytesRemaining
-    
     let lenToRead = ReadInt32 strm
-
     match lenToRead with
     | -1    ->  Resp.BulkString BulkStrContents.Nil
     | len   ->  let byteArr = Array.zeroCreate<byte> len
@@ -106,6 +103,7 @@ let ReadBulkString(rcvBufSz:int) (strm:Stream) =
                 strm.ReadByte() |> ignore   // eat CR
                 strm.ReadByte() |> ignore   // eat LF
                 byteArr |> RespUtils.MakeBulkStr
+
 
 let ReadRESPInteger = ReadInt64 >> Resp.Integer 
     

@@ -20,8 +20,9 @@
     <Compile Include="CmdProcChannels.fs" />
     <Compile Include="FredisCmdToResp.fs" />
     <Compile Include="RespToFredisCmdParser.fs" />
-    <Compile Include="RespMsgParser.fs" />
-    <Compile Include="AsyncRespMsgParser.fs" />
+    <Compile Include="RespMsgReader.fs" />
+    <Compile Include="RespMsgPipelineReader.fs" />
+    <Compile Include="AsyncRespMsgReader.fs" />
     <Compile Include="SocAsyncEventArgFuncs.fs" />
     <Compile Include="SaeaAsyncRespMsgParser.fs" />
     <Compile Include="SaeaRespStreamFuncs.fs" />
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="FSharpx.Extras" Version="2.5.0" />
+    <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
   </ItemGroup>
 
 </Project>

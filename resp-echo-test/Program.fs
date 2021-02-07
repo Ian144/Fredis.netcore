@@ -192,10 +192,9 @@ let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
     respIn = respOut
 
 
-
 let config =  FsCheck.Config.Default
 
-Check.Verbose propRespSentToEchoServerReturnsSame
+Check.Verbose makeResp
 
 //Check.One (config, propRespSentToEchoServerReturnsSame)
 

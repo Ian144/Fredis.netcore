@@ -74,10 +74,8 @@ let LoopReadPipe (client:Socket) (pipeReader:PipeReader) (ct:CancellationToken) 
 
 
 let SetupSingleClientHandler (client:Socket) (ct:CancellationToken) =
-    //clientCount <- clientCount + 1 
+    clientCount <- clientCount + 1 
     printf "new client, num: %d" clientCount
-    //let options = new PipeOptions(  readerScheduler: PipeScheduler.Inline, writerScheduler: PipeScheduler.Inline, useSynchronizationContext: false)
-
     let options = PipeOptions( null, PipeScheduler.Inline, PipeScheduler.Inline, -1L, -1L, -1, false )
     let pipe = Pipe(options);
 

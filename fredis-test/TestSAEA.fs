@@ -32,7 +32,6 @@ let private ToIList<'T> (bs : 'T array) =
     data
 
 
-
 // convenience extensions, for these tests only, taken from https://msdn.microsoft.com/en-us/library/ee370564.aspx
 type private Socket with
 
@@ -163,8 +162,8 @@ type SaeaAsyncReadCRLFPropertyAttribute() =
         Verbose = false,
         QuietOnSuccess = false )
 
-
-//let (.=.) left right = left = right |@ sprintf "\n%A =\n%A" left right
+        
+let (.=.) left right = left = right |@ sprintf "\n%A =\n%A" left right
 
 
 let SetupServerAcceptSocket (maxNumClients:int) : Socket = 
@@ -172,7 +171,6 @@ let SetupServerAcceptSocket (maxNumClients:int) : Socket =
     listenSocket.Bind(localEndPoint)
     listenSocket.Listen maxNumClients
     listenSocket
-
 
 
 [<SaeaAsyncReadCRLFPropertyAttribute>]
@@ -376,9 +374,6 @@ let ``saea AsyncWrite bytes sent are received`` (bsToSend1:byte[]) (bufSize:int)
     match xs with
     | [| _; bsReceived |] -> bsReceived = bsToSend1
     | _ -> false
-
-
-
 
 
 // test that reading for bsToSend1 followed by a read for bsToSend2.Length gives bsToSend2 for the second read

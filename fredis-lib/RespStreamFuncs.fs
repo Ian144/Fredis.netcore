@@ -1,6 +1,6 @@
 ﻿module RespStreamFuncs
 
-
+open System
 open System.IO
 open FredisTypes
 
@@ -76,4 +76,3 @@ and private SendArray (strm:Stream) (arr:Resp []) =
     while !ctr < arr.Length do
         SendResp strm arr.[!ctr]
         ctr := !ctr + 1
-    
