@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>fredis_lib</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +22,6 @@
     <Compile Include="FredisCmdToResp.fs" />
     <Compile Include="RespToFredisCmdParser.fs" />
     <Compile Include="RespMsgReader.fs" />
-    <Compile Include="RespMsgPipelineReader.fs" />
     <Compile Include="AsyncRespMsgReader.fs" />
     <Compile Include="SocAsyncEventArgFuncs.fs" />
     <Compile Include="SaeaAsyncRespMsgParser.fs" />

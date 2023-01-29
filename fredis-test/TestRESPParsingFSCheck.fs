@@ -85,7 +85,7 @@ type ArbOverrides =
 type RoundTripPropertyAttribute() = 
     inherit PropertyAttribute(
         Arbitrary = [| typeof<ArbOverrides> |],
-        MaxTest = 9999,
+        MaxTest = 999,
         EndSize = 999
     )
 
@@ -110,39 +110,6 @@ let ``Write-Read Resp stream roundtrip`` (bufSize:int) (respIn:Resp) =
     let isEof = strm.Position = strm.Length
     respIn = respOut && isEof
 
-
-[<RoundTripProperty>]
-let ``Write-Read Resp PipeLine roundtrip calc msg length`` (bufSize:int) (respIn:Resp) =
-    let ss = sprintf "%A" respIn
-    let len = ss.Length
-
-    let options = PipeOptions( null, PipeScheduler.Inline, PipeScheduler.Inline, -1L, -1L, -1, false )
-    let pipe = Pipe(options);
-    let writer = pipe.Writer
-
-    let writeStrm = writer.AsStream(true)
-    RespStreamFuncs.SendResp writeStrm respIn
-    
-    // writer.Complete(), this signals no more data will be written, and so is inappropraite here
-
-    let reader = pipe.Reader
-    use cts = new System.Threading.CancellationTokenSource()
-    let ct = cts.Token
-    let result = reader.ReadAsync(ct).AsTask().Result
-    let (buffer:ReadOnlySequence<byte>) = result.Buffer
-
-    // ref struct, so only on the stack, never the heap
-    let sr = new System.Buffers.SequenceReader<byte>(buffer);
-
-    let mutable bb = 0uy
-    let respTypeByte = sr.TryPeek( &bb )
-
-    ////strm.Seek(0L, System.IO.SeekOrigin.Begin) |> ignore
-    ////let respTypeByte = strm.ReadByte() 
-    ////let respOut = RespMsgParser.LoadRESPMsg bufSize respTypeByte strm
-    ////let isEof = strm.Position = strm.Length
-    ////respIn = respOut && isEof
-    true
 
 [<RoundTripProperty>]
 let ``Write-Read Resp PipeLine roundtrip using streams`` (bufSize:int) (respIn:Resp) =

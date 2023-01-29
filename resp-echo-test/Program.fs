@@ -159,14 +159,12 @@ and StartAccept (listenSocket:Socket) (acceptEventArg:SocketAsyncEventArgs) =
 //    let respTypeInt = strm.ReadByte()
 //    RespMsgParser.LoadRESPMsg tcpClient.ReceiveBufferSize respTypeInt strm
 
-
 let host = "127.0.0.1"
 let port = 6379
 let ipAddr        = IPAddress.Parse(host)
 let localEndPoint = IPEndPoint (ipAddr, port)
 
-
-let listenSocket = new Socket (localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+let listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
 listenSocket.Bind(localEndPoint)
 listenSocket.Listen 16
 let acceptEventArg = new SocketAsyncEventArgs()
@@ -192,11 +190,12 @@ let propRespSentToEchoServerReturnsSame (cmd:FredisTypes.FredisCmd) =
     respIn = respOut
 
 
-let config =  FsCheck.Config.Default
+//let config =  {FsCheck.Config.Verbose with EndSize = 999}
+//Check.One (config, makeResp)
 
 Check.Verbose makeResp
 
-//Check.One (config, propRespSentToEchoServerReturnsSame)
+
 
 
 printfn "tests complete"

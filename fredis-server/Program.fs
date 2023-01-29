@@ -3,7 +3,6 @@ open System.Net
 open System.Net.Sockets
 open System.Threading
 open System.IO.Pipelines;
-open System.Buffers
 
 let host = """0.0.0.0"""
 let port = 6379
@@ -12,7 +11,10 @@ let minBufSize = 8 * 1024
 
 let mutable clientCount:int = 0
 
-
+// todo: remove this
+[<Literal>]
+let PingL = 80  // P - redis-benchmark PING_INLINE just sends PING\r\n, not encoded as RESP
+let pongBytes  = "+PONG\r\n"B
 
 //#nowarn "52"
 let WaitForExitCmd () = 
@@ -46,8 +48,11 @@ let LoopReadSocketWriteIntoPipeAsync (client:Socket) (pipeWriter:PipeWriter) (ct
                 | :? OperationCanceledException ->  loopAgain <- false
     }
 
-let LoopReadPipe (client:Socket) (pipeReader:PipeReader) (ct:CancellationToken) =
+let LoopReadPipe (client:Socket) (pipe:Pipe) (pipeReader:PipeReader) (ct:CancellationToken) =
     let mutable loopAgain = true
+
+    let pipeReader2 = pipe.Reader;
+
     async{
         while loopAgain do
             let readAsyncTask = pipeReader.ReadAsync(ct).AsTask()
@@ -55,22 +60,26 @@ let LoopReadPipe (client:Socket) (pipeReader:PipeReader) (ct:CancellationToken) 
             if result.IsCompleted then
                 loopAgain <- false
             else
-                let buffer = result.Buffer
+                // false: don't complete the pipeline
+                use readStream = pipeReader.AsStream(false);
+                let respTypeInt = readStream.ReadByte()
+                if respTypeInt = PingL then // PING_INLINE cmds are sent as PING\r\n - i.e. a raw string not RESP (PING_BULK is RESP)
+                    RespStreamFuncs.Eat5NoAlloc readStream  
+                    readStream.Write (pongBytes, 0, pongBytes.Length)
+                    do! readStream.FlushAsync() |> Async.AwaitTask // todo: does the pipe based stream need to be flushed
+                else
+                    let respMsg = RespMsgParser.LoadRESPMsg client.ReceiveBufferSize respTypeInt readStream
+                    let choiceFredisCmd = FredisCmdParser.RespMsgToRedisCmds respMsg
+                    match choiceFredisCmd with 
+                    | Choice1Of2 cmd    ->  let! reply = CmdProcChannel.MailBoxChannel cmd // to process the cmd on a single thread
+                                            RespStreamFuncs.SendResp readStream reply
+                                            do! readStream.FlushAsync() |> Async.AwaitTask
+                    | Choice2Of2 err    ->  do! AsyncRespStreamFuncs.AsyncSendError readStream err
+                                            do! readStream.FlushAsync() |> Async.AwaitTask
 
-                // see https://blog.marcgravell.com/2018/07/pipe-dreams-part-1.html
-                //buffer.IsSingleSegment
-                //buffer.First
-
-                let eol:byte = '\n'B
-                let xx = "\r\n"B
-                let nullableEOLPosition = buffer.PositionOf( eol )
                 ()
             ()
     }
-
-
-
-
 
 
 let SetupSingleClientHandler (client:Socket) (ct:CancellationToken) =
@@ -78,7 +87,6 @@ let SetupSingleClientHandler (client:Socket) (ct:CancellationToken) =
     printf "new client, num: %d" clientCount
     let options = PipeOptions( null, PipeScheduler.Inline, PipeScheduler.Inline, -1L, -1L, -1, false )
     let pipe = Pipe(options);
-
 
     ()
 

@@ -9,7 +9,7 @@ round trip property test,
 - translate back to resp
 - IS out == in??
 
-what is the delimeter of an entire resp messager
+what is the delimeter of an entire resp message
 raw resp bytes out in ReadonlySequence<byte>? or pipes? 
 - pipes would exercise more of the code
 

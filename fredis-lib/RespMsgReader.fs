@@ -91,7 +91,7 @@ let ReadBulkString(rcvBufSz:int) (strm:Stream) =
         let mutable maxNumBytesToRead = if totalBytesToRead > rcvBufSz then rcvBufSz else totalBytesToRead
         let mutable totalSoFar = 0
         while totalSoFar < totalBytesToRead do
-            let numBytesRead = strm.Read (byteArray, totalSoFar, maxNumBytesToRead)            
+            let numBytesRead = strm.Read (byteArray, totalSoFar, maxNumBytesToRead)
             totalSoFar <- totalSoFar + numBytesRead
             let numBytesRemaining = totalBytesToRead - totalSoFar
             maxNumBytesToRead <- if numBytesRemaining > rcvBufSz then rcvBufSz else numBytesRemaining
@@ -106,27 +106,16 @@ let ReadBulkString(rcvBufSz:int) (strm:Stream) =
 
 
 let ReadRESPInteger = ReadInt64 >> Resp.Integer 
-    
-
-//let rec LoadRESPMsgArray (rcvBuffSz:int) (ns:Stream) = 
-//    let numArrayElements = ReadInt64 ns 
-//    let msgs = 
-//        [|  for _ in 0L .. (numArrayElements - 1L) do
-//            yield (LoadRESPMsgInner rcvBuffSz ns) |] 
-//    Resp.Array msgs
 
 let rec LoadRESPMsgArray (rcvBuffSz:int) (ns:Stream) = 
     let arrSz = ReadInt32 ns 
     let msgs = Array.zeroCreate<Resp> arrSz
     let maxIdx = arrSz - 1
     for idx = 0 to maxIdx do
-        let resp = LoadRESPMsgInner rcvBuffSz ns
+        let respTypeByte = ns.ReadByte()
+        let resp = LoadRESPMsg rcvBuffSz respTypeByte ns
         msgs.[idx] <- resp
     Resp.Array msgs
-
-and LoadRESPMsgInner (rcvBuffSz:int) (strm:Stream)  = 
-    let respTypeByte = strm.ReadByte()
-    LoadRESPMsg rcvBuffSz respTypeByte strm 
 
 and LoadRESPMsg (rcvBufSz:int) (respType:int) (strm:Stream) = 
     match respType with

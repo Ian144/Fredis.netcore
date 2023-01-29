@@ -46,14 +46,14 @@ let ``Set then GetBit matches redis`` () =
 type ``Execute GETRANGE`` () =
 
     [<Fact>]
-    static member ``GETRANGE key start end returns empty string when key does not exist`` () = 
+    static member ``GETRANGE key start end should return empty string when key does not exist`` () = 
         let hashMap = HashMap()
         let cmd = FredisCmd.GetRange (key, 0, 3)
         test <@ RespUtils.emptyBulkStr = FredisCmdProcessor.Execute hashMap cmd @>
 
 
     [<Fact>]
-    static member ``GETRANGE key 0 3 returns 'This' when key contains 'This is a string'`` () = 
+    static member ``GETRANGE key 0 3 should return 'This' when key contains 'This is a string'`` () = 
         let hashMap = HashMap()
         let setCmd = FredisCmd.Set (key, bs)
         let _ = FredisCmdProcessor.Execute hashMap setCmd
@@ -63,7 +63,7 @@ type ``Execute GETRANGE`` () =
 
 
     [<Fact>]
-    static member ``GETRANGE key -3 -1 returns 'ing' when key contains 'This is a string'`` () = 
+    static member ``GETRANGE key -3 -1 should return 'ing' when key contains 'This is a string'`` () = 
         let hashMap = HashMap()
         let setCmd = FredisCmd.Set (key, bs)
         let _ = FredisCmdProcessor.Execute hashMap setCmd
